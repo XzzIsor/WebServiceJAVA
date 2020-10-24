@@ -4,7 +4,14 @@ public class VOUser {
 	private String user;
 	private String password;
 	private String validate;
+	private int sum;
 	
+	public int getSum() {
+		return sum;
+	}
+	public void setSum(int sum) {
+		this.sum = sum;
+	}
 	public String getUser() {
 		return user;
 	}
