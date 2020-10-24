@@ -1,5 +1,7 @@
 package com.edd.ws.rest.service;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -42,6 +44,7 @@ public class ServiceLogin {
 		vo.setPassword(password);
 		vo.setValidate("Usuario invalido");
 		if (vo.getUser().equals("admin") && vo.getPassword().equals("1234")) {
+			vo.setSum(Integer.parseInt(password) + 2000);
             vo.setValidate("Usuario Valido");
         }
 		return vo;
@@ -88,5 +91,22 @@ public class ServiceLogin {
     	return operator;
     }
     
+    @GET
+    @Path("/array")
+    @Produces(MediaType.APPLICATION_JSON)
+    public VOAritmetic fillArray(@QueryParam("number") String num1) {
+    	VOAritmetic test = new VOAritmetic();
+    	ArrayList<Double> array = new ArrayList<>();
+    	test.setResult("Nada equisde");
+    	test.setOperation("Nada :u");
+    	
+    	for(int i = 0; i < Integer.parseInt(num1); i++) {
+    		array.add(Math.random());
+    	}
+    	
+    	test.setNumbers(array);
+    	return test;
+    	
+    }
     
 }

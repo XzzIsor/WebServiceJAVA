@@ -3,14 +3,14 @@ package com.edd.ws.rest.vo;
 import java.util.ArrayList;
 
 public class VOAritmetic {
-	ArrayList<Integer> numbers = new ArrayList<Integer>();
+	ArrayList<Double> numbers = new ArrayList<Double>();
 	String result;
 	String operation;
 	
-	public ArrayList<Integer> getNumbers() {
+	public ArrayList<Double> getNumbers() {
 		return numbers;
 	}
-	public void setNumbers(ArrayList<Integer> numbers) {
+	public void setNumbers(ArrayList<Double> numbers) {
 		this.numbers = numbers;
 	}
 	public String getResult() {
