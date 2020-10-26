@@ -24,6 +24,8 @@ public class ServiceTreeAVL {
 			System.out.println("Se ingreso " + node);
 			treeAVL.insertar(node);
 		}
+		treeAVL.assingCodes();
+		treeAVL.assingLevels();
 		return treeAVL;
 		
 	}
