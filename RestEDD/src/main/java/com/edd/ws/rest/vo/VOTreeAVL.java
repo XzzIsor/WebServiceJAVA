@@ -4,17 +4,22 @@ import java.util.ArrayList;
 
 public class VOTreeAVL {
 	private VONodo raiz;
+	private int high;
 
 	public VOTreeAVL() {
 		this.raiz = null;
 	}
 
+	public int getHigh() {
+		return high;
+	}
+	
 	public VONodo getRaiz() {
 		return raiz;
 	}
 
 	public void insertar(Comparable elemento) {
-		raiz = insertar(raiz, elemento);
+		raiz = insertar(raiz, null, elemento);
 	}
 
 	public static int factorEquilibrio(VONodo arbol) {
@@ -31,11 +36,12 @@ public class VOTreeAVL {
 			return alturaDerecho;
 	}
 
-	private VONodo insertar(VONodo arbol, Comparable elemento) {
+	private VONodo insertar(VONodo arbol, VONodo parent, Comparable elemento) {
 		if (arbol == null) {
-			arbol = new VONodo(elemento, null, null);
+				arbol = new VONodo(elemento, null, null);
+				
 		} else if (elemento.compareTo(arbol.getElemento()) < 0) {
-			arbol.setIzq(insertar(arbol.getIzq(), elemento));
+			arbol.setIzq(insertar(arbol.getIzq(), arbol, elemento));
 			if (factorEquilibrio(arbol.getDer()) - factorEquilibrio(arbol.getIzq()) == -2) {
 				if (elemento.compareTo(arbol.getIzq().getElemento()) < 0)
 					arbol = RotacionSimpleDer(arbol);
@@ -43,10 +49,7 @@ public class VOTreeAVL {
 					arbol = RotacionDobleIzq_Der(arbol);
 			}
 		} else if (elemento.compareTo(arbol.getElemento()) >= 0) {
-			// mediante estos cambios de > a >= en las lineas 39 y 44 podremos cosiderar
-			// los repetidos. El error en la clase fue no colocarla en la linea 44. Hacer
-			// pruebas.
-			arbol.setDer(insertar(arbol.getDer(), elemento));
+			arbol.setDer(insertar(arbol.getDer(), arbol, elemento));
 			if (factorEquilibrio(arbol.getDer()) - factorEquilibrio(arbol.getIzq()) == 2) {
 				if (elemento.compareTo(arbol.getDer().getElemento()) >= 0)
 					arbol = RotacionSimpleIzq(arbol);
@@ -111,6 +114,7 @@ public class VOTreeAVL {
 		 ArrayList<String> tree =  new ArrayList<>(); 
 		 getTreeByLvl(raiz, 0, tree);
 		 return tree;
+		 
 	}
 	
 	private void getTreeByLvl (VONodo aux, int lvl, ArrayList<String> response) {
@@ -129,5 +133,43 @@ public class VOTreeAVL {
 		for (int i = 0; i < Tree.size() ; i++) {
 			System.out.println("lvl = "  + (i+1) +"  values = "  +  Tree.get(i));
 		}
+	}
+	
+	public void assingCodes() {
+		assingCodes(raiz, null);
+	}
+	
+	private void assingCodes(VONodo aux, VONodo parent) {
+		if(aux == null) {
+			return;
+		}
+		if(parent == null) {
+			aux.setCod((int) (Math.random()*1000 + 100));
+			aux.setCodParent(0);
+			assingCodes(aux.getIzq(), aux);
+			assingCodes(aux.getDer(), aux);
+		}else {
+			aux.setCod((int) (Math.random()*1000 + 100));
+			aux.setCodParent(parent.getCod());
+			assingCodes(aux.getIzq(), aux);
+			assingCodes(aux.getDer(), aux);
+		}
+
+	}
+	
+	public void assingLevels() {
+		assingLevels(raiz, 0);
+	}
+	
+	private void assingLevels(VONodo aux, int lvl) {
+		if(aux == null) {
+			high = lvl + 1;
+			return;
+		}
+		aux.setLevel(lvl);
+		lvl = lvl + 1;
+		assingLevels(aux.getDer(), lvl);
+		assingLevels(aux.getIzq(), lvl);
+		
 	}
 }
