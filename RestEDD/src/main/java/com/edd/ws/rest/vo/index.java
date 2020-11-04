@@ -10,17 +10,28 @@ import javax.swing.event.DocumentEvent.ElementChange;
 
 public class index {
 
-	Archivo path;
-	String type;
+	Archivo path = new Archivo();
+	String type = "";
 	Nodo root = new Nodo<>();
 	
 	public index() {
-		root = null;
 	}
 	
 	public index(Archivo path) {
 		this.path = path;
 		type = path.getType();
+		initialize();
+	}
+	
+	public index(String path) {
+		Fichero file = new Fichero(path);
+		Archivo archive = new Archivo();
+		archive.setType(file.getText().get(0));
+		for(int i = 1; i < file.getText().size(); i++) {
+			archive.getNodes().add(file.getText().get(i));
+		}
+		this.path = archive;
+		type = archive.getType();
 		initialize();
 	}
 	
@@ -44,9 +55,9 @@ public class index {
 	}
 	
 	private void initialize() {
-		if (type.equals("1")){
+		if (type.equals("0")){
 			initializeWithString();
-		}else {
+		}else{
 			initializeWithInteger();
 		}
 	}
@@ -109,51 +120,50 @@ public class index {
 		}
 	}
 	
-	public void pruneTree(int lvl ) {
-		if(lvl == 0) {
-			System.out.println("The action could not be performed, because it would eliminate the whole tree");
+	public void pruneTree(String lvl ) {
+		int lvlAux = Integer.parseInt(lvl);
+		if(lvlAux == 0) {
 			return;
 		}
 		ArrayList<Nodo> aux = new ArrayList<>();
 		ArrayList<Nodo> response = new ArrayList();
-	    TreeLevel(0, lvl-1, root, response);
-	    TreeLevel(0, lvl, root, aux);
+	    TreeLevel(0, lvlAux-1, root, response);
+	    TreeLevel(0, lvlAux, root, aux);
 	    
 	    if (aux.isEmpty()) {
-	    	System.out.println("You chose a lvl that is not in the tree");
 	    	return; 
 	    }
 	    
 	    for (int i = 0; i < response.size() ; i++) {
 	    	response.get(i).removeSons();
 	    }
-	    showTree();
+	    
 	    return;
 	    
 	}	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	public void traverseBranches () {
-		
+	public String traverseBranches () {
+		String responseString ="";
 		Nodo copyRoot  = root;
 		ArrayList<Nodo> response = new ArrayList(); 
 		
 		if(root.getSons().isEmpty()) {
-			System.out.println("The tree don't have branches");
-			return;
-			
+			return responseString;
 		}
 		
 		while (response.size() != 1) {
 			response = new ArrayList(); 
 			FirstWay(copyRoot,response );
 			if (response.size() != 1) {
-				showListaNode(response);
+				for(int i = 0; i < response.size(); i++) {
+					responseString = responseString + "[ "+ response.get(i).getElement().toString() +" ] ";
+				}
+				responseString = responseString + " -- ";
 			}
 			cleanLonelyBranch(response);
-			System.out.println();
 		}
-		initialize();
+		return responseString;
 	}
 	
 	private void cleanLonelyBranch(ArrayList<Nodo> Nodolist) {
@@ -206,57 +216,60 @@ public class index {
 		}
 	}
 
-	public void showNodesByLevel(int lvl) {
+	public String showNodesByLevel(String lvl) {
 		ArrayList<Nodo> nodes = new ArrayList<>();
-		TreeLevel(0, lvl, root, nodes);
-		if(lvl == 0) {
-			System.out.println("Level of the root and the node is: "+ root.getElement());
-			return;
-		}
-		if(nodes.isEmpty()) {
-			System.out.println("The level doesn't exists in the tree");
-			return;
-		}
+		String response = "";
+		int lvlAux = Integer.parseInt(lvl);
+		TreeLevel(0, lvlAux, root, nodes);
 		
-		System.out.println("showing lvl = " + lvl);
-		System.out.println("amount = " + nodes.size());
-		showListaNode(nodes);
-		System.out.println();
+		if(nodes.isEmpty()) {
+			response = "That level doesn't exists in the tree";
+			return response;
+		}
+		for(int i = 0; i < nodes.size(); i++) {
+			response = response + "[ "+ nodes.get(i).getElement().toString()+ " ] ";
+		}
+		return response;
+		
 	}
 	
 	//this shows the tree by width
-	public void showTree() {
+	public String showTree() {
 		int counter = 0;
+		String response = "";
 		ArrayList<Nodo> lvls =new ArrayList(); 
 		TreeLevel(0, counter,  root, lvls );
-		showListaNode(lvls);
+		for(int i = 0; i < lvls.size(); i++) {
+			response = response + "[ "+ lvls.get(i).getElement().toString()+ " ] ";
+		}
+		
 		
 		while (!lvls.isEmpty()) {
 			lvls =new ArrayList(); 
 			counter = counter + 1;
 			TreeLevel(0, counter,  root, lvls );
-			showListaNode(lvls);
+			for(int i = 0; i < lvls.size(); i++) {
+				response = response + "[ "+ lvls.get(i).getElement().toString()+ "] ";
+			}
 		}
-		System.out.println("\n");
-
+		
+		return response;
 	}
 	
-	private void showListString(ArrayList<String> list) {
-		for(int i = 0; i < list.size(); i++) {
-			System.out.print("["+list.get(i) + "] ");
-		}
-		System.out.println("\n");
-	}
 	
-	public void showSons(Comparable element){
+	public String showSons(Comparable element){
 		ArrayList<String> info = new ArrayList<>();
+		String response = "";
 		showSons(root, element, info);
-		if(info.isEmpty()) {
-			System.out.println("The node "+ element+" hasn't sons or doesn't exists");
-		}else {
-			System.out.print("The node "+ element +" has "+ info.size() + " sons and they are: ");
-			showListString(info);
+		if(info.size() != 0) {
+			for(int i = 0; i < info.size(); i++) {
+				response = response + "[ "+info.get(i) +" ] ";
+			}
+			return response;
 		}
+		response = "The node " + element + " hasn't sons or doesn't exists";
+		return response;
+
 	}
 	
 	private void showSons(Nodo aux, Comparable element, ArrayList<String> sonsString) {
@@ -264,28 +277,33 @@ public class index {
 		if(aux == null) 
 			return;
 				
-		for (int j = 0; j < aux.getSons().size(); j++) {
-			if(element.compareTo(aux.getElement().toString()) == 0) {
-				sons = aux.getSons();
-				for(int i = 0; i < sons.size(); i++) {
-					sonsString.add(sons.get(i).getElement().toString());
-				}
-				return;
+		if(aux.getElement().toString().equals(element.toString())) {
+			sons = aux.getSons();
+			for(int i = 0; i < sons.size(); i++) {
+				sonsString.add(sons.get(i).getElement().toString());
 			}
+			return;
+		}
+		
+		for (int j = 0; j < aux.getSons().size(); j++) {
 			showSons((Nodo) aux.getSons().get(j), element, sonsString);
 		}
 	}
 	
-	public void showLeaves() {
-		ArrayList<String> leafs = new ArrayList<>();
-		showLeaves(root, leafs);
+	public String showLeaves() {
+		String response = "";
+		ArrayList<String> leaves = new ArrayList<>();
+		showLeaves(root, leaves);
 		
-		if(leafs.isEmpty()) {
-			System.out.println("Te tree doesn't exists");
-		}else {
-			System.out.print("The tree's leaves are: ");
-			showListString(leafs);
+		if(leaves.isEmpty()) {
+			response = "The tree doesn't exists";
+			return response;
 		}
+		for(String data : leaves) {
+			response = response + "[ "+ data +" ] ";
+		}
+		return response;
+		
 		
 	} 
 	
@@ -304,21 +322,18 @@ public class index {
 		
 	}
 	
-	public void showSiblings(Comparable element) {
-		ArrayList<String> siblings = new ArrayList<String>();
-		showSiblings(root, null, element, siblings);
-		
-		if(element == root.getElement()) {
-			System.out.println("The element is the root. Doesn't has siblings");
-			return;
-		}
-		if(siblings.isEmpty()) {
-			System.out.println("The node " +element+ " hasn't sons or doesn't exists");
-		}else {
-			System.out.print("The node "+ element + " has " + siblings.size() +" siblings and they are: ");
-			showListString(siblings);
-		}
-		
+	public String showSiblings(Comparable element) {
+			String response = "";
+			ArrayList<String> siblings = new ArrayList<>();
+			showSiblings(root, root, element, siblings );
+			if(siblings.isEmpty()) {
+				response = "The node hasn't siblings or doesn't exists";
+				return response;
+			}
+			for(String data : siblings) {
+				response = response + "[ " + data + " ] ";
+			}
+			return response;
 		
 	}
 	
@@ -330,20 +345,22 @@ public class index {
 		if(element.compareTo(root.getElement().toString()) == 0) {
 			return;
 		}
-
-		for(int j = 0; j < aux.getSons().size()+1; j++) {	
-			if(element.compareTo(aux.getElement().toString()) == 0) {
-				list = father.getSons();
-				for(int i = 0; i < list.size(); i++) {
-					if(!list.get(i).getElement().toString().equals(element)) {
-						siblings.add(list.get(i).getElement().toString());
-					}
+		
+		if(element.compareTo(aux.getElement().toString()) == 0) {
+			list = father.getSons();
+			for(int i = 0; i < list.size(); i++) {
+				if(!list.get(i).getElement().toString().equals(element)) {
+					siblings.add(list.get(i).getElement().toString());
 				}
-				return;
 			}
-			showSiblings((Nodo) aux.getSons().get(j), aux, element, siblings);
+			return;
 		}
 
+		if(!aux.getSons().isEmpty()) {
+			for(int j = 0; j < aux.getSons().size(); j++) {	
+				showSiblings((Nodo) aux.getSons().get(j), aux, element, siblings);
+			}
+		}
 	}
 	
 	
