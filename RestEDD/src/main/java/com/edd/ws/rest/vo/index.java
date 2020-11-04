@@ -159,7 +159,7 @@ public class index {
 				for(int i = 0; i < response.size(); i++) {
 					responseString = responseString + "[ "+ response.get(i).getElement().toString() +" ] ";
 				}
-				responseString = responseString + "\n";
+				responseString = responseString + " -- ";
 			}
 			cleanLonelyBranch(response);
 		}
@@ -227,7 +227,7 @@ public class index {
 			return response;
 		}
 		for(int i = 0; i < nodes.size(); i++) {
-			response = response + "[ "+ nodes.get(i).getElement().toString()+ "] ";
+			response = response + "[ "+ nodes.get(i).getElement().toString()+ " ] ";
 		}
 		return response;
 		
@@ -240,7 +240,7 @@ public class index {
 		ArrayList<Nodo> lvls =new ArrayList(); 
 		TreeLevel(0, counter,  root, lvls );
 		for(int i = 0; i < lvls.size(); i++) {
-			response = response + "[ "+ lvls.get(i).getElement().toString()+ "] ";
+			response = response + "[ "+ lvls.get(i).getElement().toString()+ " ] ";
 		}
 		
 		
@@ -277,14 +277,15 @@ public class index {
 		if(aux == null) 
 			return;
 				
-		for (int j = 0; j < aux.getSons().size(); j++) {
-			if(aux.getElement().toString().equals(element.toString())) {
-				sons = aux.getSons();
-				for(int i = 0; i < sons.size(); i++) {
-					sonsString.add(sons.get(i).getElement().toString());
-				}
-				return;
+		if(aux.getElement().toString().equals(element.toString())) {
+			sons = aux.getSons();
+			for(int i = 0; i < sons.size(); i++) {
+				sonsString.add(sons.get(i).getElement().toString());
 			}
+			return;
+		}
+		
+		for (int j = 0; j < aux.getSons().size(); j++) {
 			showSons((Nodo) aux.getSons().get(j), element, sonsString);
 		}
 	}
@@ -324,7 +325,7 @@ public class index {
 	public String showSiblings(Comparable element) {
 			String response = "";
 			ArrayList<String> siblings = new ArrayList<>();
-			showSiblings(root, null, element, siblings );
+			showSiblings(root, root, element, siblings );
 			if(siblings.isEmpty()) {
 				response = "The node hasn't siblings or doesn't exists";
 				return response;
@@ -344,20 +345,22 @@ public class index {
 		if(element.compareTo(root.getElement().toString()) == 0) {
 			return;
 		}
-
-		for(int j = 0; j < aux.getSons().size()+1; j++) {	
-			if(element.compareTo(aux.getElement().toString()) == 0) {
-				list = father.getSons();
-				for(int i = 0; i < list.size(); i++) {
-					if(!list.get(i).getElement().toString().equals(element)) {
-						siblings.add(list.get(i).getElement().toString());
-					}
+		
+		if(element.compareTo(aux.getElement().toString()) == 0) {
+			list = father.getSons();
+			for(int i = 0; i < list.size(); i++) {
+				if(!list.get(i).getElement().toString().equals(element)) {
+					siblings.add(list.get(i).getElement().toString());
 				}
-				return;
 			}
-			showSiblings((Nodo) aux.getSons().get(j), aux, element, siblings);
+			return;
 		}
 
+		if(!aux.getSons().isEmpty()) {
+			for(int j = 0; j < aux.getSons().size(); j++) {	
+				showSiblings((Nodo) aux.getSons().get(j), aux, element, siblings);
+			}
+		}
 	}
 	
 	
